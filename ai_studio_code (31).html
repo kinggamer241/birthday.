@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Birthday | Shreejal</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --royal-gold: #d4af37;
+            --dark-gold: #aa891c;
+            --velvet-red: #4a0e0e;
+            --royal-black: #0f0f0f;
+            --glass-gold: rgba(212, 175, 55, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at center, var(--velvet-red) 0%, var(--royal-black) 100%);
+            color: #f1f1f1;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Royal Border Frame */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px solid var(--royal-gold);
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* --- LOADING SCREEN --- */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--royal-black);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 1.5s ease;
+        }
+        .loader-box { text-align: center; border: 1px solid var(--royal-gold); padding: 40px; background: rgba(0,0,0,0.5); }
+        .loader-box h1 { font-family: 'Cinzel', serif; color: var(--royal-gold); font-size: 1.8rem; margin-bottom: 15px; letter-spacing: 3px; }
+        .loader-box p { font-style: italic; color: #fff; opacity: 0.7; }
+
+        /* --- MAIN CONTAINER --- */
+        .container { width: 90%; max-width: 550px; text-align: center; z-index: 10; display:none; }
+
+        .screen { display: none; animation: fadeInGold 1.2s ease-out forwards; }
+        .active { display: block; }
+
+        @keyframes fadeInGold {
+            from { opacity: 0; filter: brightness(0); transform: scale(0.95); }
+            to { opacity: 1; filter: brightness(1); transform: scale(1); }
+        }
+
+        h1, h2 { font-family: 'Cinzel', serif; color: var(--royal-gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+
+        /* --- CLOCK --- */
+        .clock-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .clock-unit {
+            background: var(--glass-gold);
+            border: 1px solid var(--royal-gold);
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .clock-val { font-family: 'Playfair Display', serif; font-size: 1.8rem; display: block; color: #fff; }
+        .clock-label { font-size: 0.6rem; letter-spacing: 2px; color: var(--royal-gold); text-transform: uppercase; }
+
+        /* --- BALLOONS --- */
+        .balloon-flex { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
+        .balloon {
+            width: 65px; height: 85px; 
+            background: linear-gradient(135deg, #d4af37, #f9f295, #b8860b);
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            cursor: pointer; position: relative; transition: 0.5s;
+            display: flex; align-items: center; justify-content: center;
+            color: transparent; font-weight: bold; font-family: 'Cinzel';
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .balloon::after { content: ''; position: absolute; bottom: -5px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid var(--royal-gold); }
+        .balloon.popped { background: transparent !important; border: 1px solid var(--royal-gold); color: var(--royal-gold); transform: translateY(-10px); }
+
+        /* --- BUTTONS --- */
+        .royal-btn {
+            background: transparent;
+            color: var(--royal-gold);
+            border: 1px solid var(--royal-gold);
+            padding: 12px 35px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            margin-top: 25px;
+        }
+        .royal-btn:hover { background: var(--royal-gold); color: black; box-shadow: 0 0 20px var(--royal-gold); }
+
+        /* --- LETTER --- */
+        .scroll-box {
+            background: rgba(15, 15, 15, 0.8);
+            border-top: 2px solid var(--royal-gold);
+            border-bottom: 2px solid var(--royal-gold);
+            padding: 30px;
+            height: 60vh;
+            overflow-y: auto;
+            text-align: left;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #e0e0e0;
+        }
+        .scroll-box::-webkit-scrollbar { width: 3px; }
+        .scroll-box::-webkit-scrollbar-thumb { background: var(--royal-gold); }
+
+        .hidden { display: none; }
+        .star-shine { animation: shine 3s infinite; }
+        @keyframes shine { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; text-shadow: 0 0 20px gold; } }
+
+    </style>
+</head>
+<body onload="launch()">
+
+    <!-- ROYAL LOADER -->
+    <div id="loader">
+        <div class="loader-box">
+            <h1>16 Years of Brilliance</h1>
+            <p>A Cutiepie was born 16 years ago!</p>
+            <h2 style="margin-top:20px; font-size: 1.2rem; color: #fff;">Happy Birthday, Shreejal</h2>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div class="container" id="main">
+        
+        <!-- SCREEN 1: GREETING -->
+        <div id="s1" class="screen active">
+            <h1 class="star-shine" style="font-size: 1.6rem; margin-bottom: 10px;">HAPPY BIRTHDAY <br><span style="font-size: 3rem;">SHREEJAL!</span></h1>
+            <h2 style="font-style: italic; color: #fff; font-size: 1rem; margin-bottom: 20px;">
+                STAY HAPPY🎉, STAY CRAZY 🤪, <br>
+                KEEP SHINING LIKE A STAR 💫
+            </h2>
+            <button class="royal-btn" onclick="next(2)">Proceed to Throne 👑</button>
+        </div>
+
+        <!-- SCREEN 2: THE CLOCK -->
+        <div id="s2" class="screen">
+            <h2 style="letter-spacing: 3px;">The Royal Timeline</h2>
+            <div class="clock-grid">
+                <div class="clock-unit"><span id="days" class="clock-val">00</span><span class="clock-label">Days</span></div>
+                <div class="clock-unit"><span id="hours" class="clock-val">00</span><span class="clock-label">Hours</span></div>
+                <div class="clock-unit"><span id="mins" class="clock-val">00</span><span class="clock-label">Mins</span></div>
+                <div class="clock-unit"><span id="secs" class="clock-val">00</span><span class="clock-label">Secs</span></div>
+            </div>
+            <div class="clock-unit" style="margin-top: 10px;">
+                <span id="yrs" class="clock-val" style="font-size: 1rem;">0.00000000</span>
+                <span class="clock-label">Years until April 9, 2026</span>
+            </div>
+            <button class="royal-btn" onclick="next(3)">The Golden Gifts 🎁</button>
+        </div>
+
+        <!-- SCREEN 3: BALLOONS -->
+        <div id="s3" class="screen">
+            <h2 style="margin-bottom: 20px;">Pop the Chrome Treasures</h2>
+            <div class="balloon-flex">
+                <div class="balloon" onclick="pop(this, 'YOU')">?</div>
+                <div class="balloon" onclick="pop(this, 'ARE')">?</div>
+                <div class="balloon" onclick="pop(this, 'A')">?</div>
+                <div class="balloon" onclick="pop(this, 'CUTIE')">?</div>
+            </div>
+            <button id="btn3" class="royal-btn hidden" onclick="next(4)">The Royal Feast 🎂</button>
+        </div>
+
+        <!-- SCREEN 4: CAKE -->
+        <div id="s4" class="screen">
+            <div style="font-size: 120px; cursor: pointer; filter: drop-shadow(0 0 10px gold);" id="cake" onclick="cut()">🎂</div>
+            <h2 id="cake-msg" style="margin-top: 20px;">Touch to Celebrate</h2>
+            <button id="btn4" class="royal-btn hidden" onclick="next(5)">A Message for Her Highness ❤️</button>
+        </div>
+
+        <!-- SCREEN 5: FINAL LETTER -->
+        <div id="s5" class="screen">
+            <div class="scroll-box" id="letter"></div>
+            <button class="royal-btn" onclick="location.reload()">Return to Start</button>
+        </div>
+
+    </div>
+
+    <!-- Music (Placeholder) -->
+    <audio id="music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const target = new Date("April 9, 2026 00:00:00").getTime();
+        let pops = 0;
+        const song = document.getElementById('music');
+
+        function launch() {
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('main').style.display = 'block';
+                }, 1500);
+            }, 4000);
+        }
+
+        function next(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('s'+n).classList.add('active');
+            if(n === 2) { song.play(); startClock(); }
+            if(n === 5) typeWriter();
+        }
+
+        function startClock() {
+            setInterval(() => {
+                const now = new Date().getTime();
+                const diff = target - now;
+                document.getElementById('days').innerText = Math.floor(diff / (86400000));
+                document.getElementById('hours').innerText = Math.floor((diff % 86400000) / 3600000);
+                document.getElementById('mins').innerText = Math.floor((diff % 3600000) / 60000);
+                document.getElementById('secs').innerText = Math.floor((diff % 60000) / 1000);
+                document.getElementById('yrs').innerText = (diff / (1000 * 60 * 60 * 24 * 365.25)).toFixed(8);
+            }, 1000);
+        }
+
+        function pop(el, t) {
+            if(!el.classList.contains('popped')) {
+                el.classList.add('popped');
+                el.innerText = t;
+                pops++;
+                confetti({ colors: ['#d4af37', '#ffffff'], particleCount: 40 });
+                if(pops === 4) document.getElementById('btn3').classList.remove('hidden');
+            }
+        }
+
+        function cut() {
+            document.getElementById('cake').innerText = "🍰";
+            document.getElementById('cake-msg').innerText = "Long Live the Queen! 🥂";
+            confetti({ colors: ['#d4af37', '#ffffff', '#4a0e0e'], particleCount: 200, spread: 90 });
+            document.getElementById('btn4').classList.remove('hidden');
+        }
+
+        const msg = `May you always be surrounded by people who value you, support you, and uplift you. And even on days when things don't go as planned, I hope you never forget how strong and capable you truly are. You deserve all the love, respect, and happiness this world has to offer.\n\nShreejal, your kindness is your superpower. The way you care for others, the way you listen, and the way you stand by people—it doesn't go unnoticed. You make a difference just by being yourself, and that's something truly beautiful.\n\nOn your birthday, I also want you to take time for yourself. Celebrate your achievements, no matter how small they may seem. Be proud of the person you are becoming. Treat yourself with the same love and care that you so freely give to others.\n\nLife is a journey filled with ups and downs, but with your strength and positivity, there's nothing you can't overcome.\n\nKeep believing in yourself, keep chasing your dreams, and never let anything dim your shine. You are capable of achieving incredible things, and this world is better because you are in it.\n\nAs you blow out the candles today, I hope each flame carries a wish that comes true. May your heart always be filled with hope, your mind with clarity, and your life with endless opportunities to grow and shine. And remember, no matter where life takes you, there will always be people cheering for you, believing in you, and wishing nothing but the best for you.\n\nYou are never alone in your journey.\n\nSo here's to you, Shreejal—a wonderful, kind, and inspiring person. May your birthday be as beautiful as your heart, as bright as your smile, and as unforgettable as the joy you bring into others' lives. Once again, Happy Birthday! May this year be your best one yet, filled with love, laughter, success, and everything your heart desires (and sorry mai sath nhi hun ) ❤️`;
+
+        function typeWriter() {
+            let i = 0;
+            const el = document.getElementById('letter');
+            function type() {
+                if (i < msg.length) {
+                    el.innerHTML += msg.charAt(i) === "\n" ? "<br>" : msg.charAt(i);
+                    i++;
+                    setTimeout(type, 35);
+                    el.scrollTop = el.scrollHeight;
+                }
+            }
+            type();
+        }
+    </script>
+</body>
+</html>
